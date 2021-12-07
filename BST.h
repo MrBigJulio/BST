@@ -83,15 +83,16 @@ Node* Tree::search(int data) {
         }
     }
 }
-void Tree::deleteSearched(Node* nodePtr) {
-    if (nodePtr == nullptr){}
+void Tree::deleteSearched(Node* node) {
+    if (node == nullptr){}
     else{
-        Node* node = nodePtr;
         if (node->left == nullptr && node->right == nullptr && node == root){
             root = nullptr;
+            delete node;
         }else if (node->left == nullptr && node->right == nullptr){
             if (node == node->parent->left) node->parent->left = nullptr;
             else if (node == node->parent->right) node->parent->right = nullptr;
+            delete node;
         }else if (node->left == nullptr){
             if (node == node->parent->left){
                 node->parent->left = node->right;
@@ -100,6 +101,7 @@ void Tree::deleteSearched(Node* nodePtr) {
                 node->parent->right = node->right;
                 node->right->parent = node->parent;
             }
+            delete node;
         }else if (node->right == nullptr){
             if (node == node->parent->left){
                 node->parent->left = node->left;
@@ -108,20 +110,66 @@ void Tree::deleteSearched(Node* nodePtr) {
                 node->parent->right = node->left;
                 node->left->parent = node->parent;
             }
+            delete node;
         }else{
             if (node == node->parent->left){
                 Node* deletedNode = node;
                 node = node->left;
-                while (node->right != nullptr) node = node->right;
-                node->parent->right = node->left;
-                node->left->parent = node->parent;
-                deletedNode->parent->left = node;
-                node->parent = deletedNode->parent;
-
-
+                if(node->right == nullptr){
+                    deletedNode->parent->left = node;
+                    node->parent = deletedNode->parent;
+                    deletedNode->right->parent = node;
+                    node->right = deletedNode->left;
+                }else{
+                    while (node->right != nullptr) node = node->right;
+                    node->parent->right = node->left;
+                    node->left->parent = node->parent;
+                    deletedNode->parent->left = node;
+                    node->parent = deletedNode->parent;
+                    deletedNode->left->parent = node;
+                    node->left = deletedNode->left;
+                    deletedNode->right->parent = node;
+                    node->right = deletedNode->right;
+                }
+                delete deletedNode;
+            }else if(node == node->parent->right){
+                Node* deletedNode = node;
+                node = node->right;
+                if(node->left == nullptr){
+                    deletedNode->parent->right = node;
+                    node->parent = deletedNode->parent;
+                    deletedNode->left->parent = node;
+                    node->left = deletedNode->left;
+                }else{
+                    while (node->left != nullptr) node = node->left;
+                    node->parent->left = node->right;
+                    node->right->parent = node->parent;
+                    deletedNode->parent->right = node;
+                    node->parent = deletedNode->parent;
+                    deletedNode->right->parent = node;
+                    node->right = deletedNode->right;
+                    deletedNode->left->parent = node;
+                    node->left = deletedNode->left;
+                }
+                delete deletedNode;
+            }else if(node == root){
+                Node* deletedNode = node;
+                node = node->right;
+                if(node->left == nullptr){
+                    deletedNode->left->parent = node;
+                    node->left = deletedNode->left;
+                }else {
+                    while (node->left != nullptr) node = node->left;
+                    node->parent->left = node->right;
+                    node->right->parent = node->parent;
+                    deletedNode->right->parent = node;
+                    node->right = deletedNode->right;
+                    deletedNode->left->parent = node;
+                    node->left = deletedNode->left;
+                }
+                delete deletedNode;
             }
         }
-        delete node;
         size--;
     }
 }
