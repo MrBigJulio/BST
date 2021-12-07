@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+E:/Code/C++/BST_CLion/BST.h
+
+E:/Code/C++/BST_CLion/main.cpp
+iostream
+-
+BST.h
+E:/Code/C++/BST_CLion/BST.h
+

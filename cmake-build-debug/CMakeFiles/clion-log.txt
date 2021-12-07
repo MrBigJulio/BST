@@ -1,0 +1,4 @@
+C:\Users\mrbig\AppData\Local\JetBrains\Toolbox\apps\CLion\ch-0\212.5457.51\bin\cmake\win\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_DEPENDS_USE_COMPILER=FALSE -G "CodeBlocks - NMake Makefiles" E:\Code\C++\BST_CLion
+-- Configuring done
+-- Generating done
+-- Build files have been written to: E:/Code/C++/BST_CLion/cmake-build-debug
