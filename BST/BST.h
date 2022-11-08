@@ -50,11 +50,11 @@ public:
 		else return false;
 	}
 
-	void create(Data d, int ctr) {
+	bool createLeaf(Data d, int ctr) {
 		while (true) {
 			if (compare(d, *this->leafData)) {
 				if (this->left) {
-					this->left->create(d, ctr);
+					this->left->createLeaf(d, ctr);
 					break;
 				}
 				else {
@@ -65,7 +65,7 @@ public:
 			}
 			else if (compare(*this->leafData, d)) {
 				if (this->right) {
-					this->right->create(d, ctr);
+					this->right->createLeaf(d, ctr);
 					break;
 				}
 				else {
@@ -74,7 +74,9 @@ public:
 					break;
 				}
 			}
-			else break;
+			else {
+				return false;
+			};
 		}
 	}
 
@@ -92,6 +94,10 @@ public:
 		root = nullptr;
 		size = 0;
 		idctr = 0;
+	}
+
+	bool create(Leaf& n, Data d, int ctr) {
+		return n.createLeaf(d, ctr);
 	}
 
 	void add(Data);
@@ -112,9 +118,10 @@ void Tree::add(Data d) {
 	}
 	else
 	{
-		root->create(d, idctr);
-		idctr++;
-		size++;
+		if (create(*root, d, idctr) != false) {
+			idctr++;
+			size++;
+		}
 	}
 }
 
