@@ -2,10 +2,28 @@
 //
 
 #include <iostream>
+#include "BST.h"
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    Tree* tree = new Tree();
+    Data* a = new Data();
+    a->dataC = 'a';
+    a->dataI = 3;
+    tree->add(*a);
+    Data* b = new Data();
+    b->dataI = 2;
+    b->dataC = 'b';
+    tree->add(*b);
+    Data* c = new Data();
+    c->dataI = 4;
+    c->dataC = 'c';
+    tree->add(*c);
+    Data* d = new Data();
+    d->dataI = 4;
+    d->dataC = 'c';
+    tree->add(*d);
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
