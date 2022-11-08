@@ -150,6 +150,38 @@ void Tree::add(Data data) {
 			idctr++;
 			size++;
 		}
+
+		//bool flag = false;
+		//Leaf curent = *root;
+		//while (flag != true) {
+		//	if (data < *curent.leafData) {
+		//		if (curent.left) {
+		//			curent = *curent.left;
+		//		}
+		//		else {
+		//			curent.left = new Leaf(data, curent, idctr);
+		//			//*curent.left->parent = curent;
+		//			size++;
+		//			idctr++;
+		//			flag = true;
+		//		}
+		//	}
+		//	else if (*curent.leafData < data) {
+		//		if (curent.right) {
+		//			curent = *curent.right;
+		//		}
+		//		else {
+		//			curent.right = new Leaf(data, curent, idctr);
+		//			//*curent.right->parent = curent;
+		//			size++;
+		//			idctr++;
+		//			flag = true;
+		//		}
+		//	}
+		//	else {
+		//		flag = true;
+		//	};
+		//}
 	}
 }
 
