@@ -4,16 +4,33 @@ using namespace std;
 
 class Data {
 public:
-	int dataI;
-	char dataC;
+	int dataInt;
+	char dataChar;
 
 	Data() {
 
 	}
 
-	Data(const Data& d) {
-		dataI = d.dataI;
-		dataC = d.dataC;
+	Data(const Data& data) {
+		dataInt = data.dataInt;
+		dataChar = data.dataChar;
+	}
+
+	bool operator < (const Data& compare) {
+		if (dataInt < compare.dataInt) return true;
+		else if (dataInt == compare.dataInt && dataChar < compare.dataChar) return true;
+		else return false;
+	};
+
+	bool operator == (const Data& compare) {
+		if (dataInt == compare.dataInt && dataChar == compare.dataChar) return true;
+		else return false;
+	}
+
+	bool operator > (const Data& compare) {
+		if (dataInt > compare.dataInt) return true;
+		else if (dataInt == compare.dataInt && dataChar > compare.dataChar) return true;
+		else return false;
 	}
 };
 
@@ -33,49 +50,59 @@ public:
 		right = nullptr;
 	}
 
-	Leaf(Data d, int ctr) {
-		id = ctr;
-		leafData = new Data(d);
+	Leaf(Data data, int counter) {
+		id = counter;
+		leafData = new Data(data);
 		parent = nullptr;
 		left = nullptr;
 		right = nullptr;
 	}
 
+	Leaf(const Leaf& leaf) {
+		id = leaf.id;
+		leafData = leaf.leafData;
+		parent = leaf.parent;
+		left = leaf.left;
+		right = leaf.right;
+	}
 
-	bool compare(Data a, Data b) {
-		if (a.dataI < b.dataI) return true;
-		else if (a.dataI == b.dataI) {
-			return a.dataC < b.dataC;
+
+	bool addCompare(Data a, Data b) {
+		if (a.dataInt < b.dataInt) return true;
+		else if (a.dataInt == b.dataInt) {
+			return a.dataChar < b.dataChar;
 		}
 		else return false;
 	}
 
-	bool createLeaf(Data d, int ctr) {
+	
+
+	bool createLeaf(Data data, int counter) {
 		while (true) {
-			if (compare(d, *this->leafData)) {
+			if (addCompare(data, *this->leafData)) {
 				if (this->left) {
-					this->left->createLeaf(d, ctr);
+					this->left->createLeaf(data, counter);
 					break;
 				}
 				else {
-					this->left = new Leaf(d, ctr);
+					this->left = new Leaf(data, counter);
 					this->left->parent = this;
 					break;
 				}
 			}
-			else if (compare(*this->leafData, d)) {
+			else if (addCompare(*this->leafData, data)) {
 				if (this->right) {
-					this->right->createLeaf(d, ctr);
+					this->right->createLeaf(data, counter);
 					break;
 				}
 				else {
-					this->right = new Leaf(d, ctr);
+					this->right = new Leaf(data, counter);
 					this->right->parent = this;
 					break;
 				}
 			}
 			else {
-				return false;
+				return true;
 			};
 		}
 	}
@@ -87,21 +114,22 @@ private:
 	Leaf* root;
 	int size;
 	int idctr;
-
+	
 public:
-
+	Leaf* memory;
 	Tree() {
 		root = nullptr;
 		size = 0;
 		idctr = 0;
+		memory = nullptr;
 	}
 
-	bool create(Leaf& n, Data d, int ctr) {
-		return n.createLeaf(d, ctr);
+	bool create(Leaf& root, Data data, int counter) {
+		return root.createLeaf(data, counter);
 	}
 
 	void add(Data);
-	void search();
+	void search(Data);
 	void del();
 	void pre();
 	void in();
@@ -110,19 +138,31 @@ public:
 	void to_string();
 };
 
-void Tree::add(Data d) {
+void Tree::add(Data data) {
 	if (!root) {
-		root = new Leaf(d, idctr);
+		root = new Leaf(data, idctr);
 		idctr++;
 		size++;
 	}
 	else
 	{
-		if (create(*root, d, idctr) != false) {
+		if (create(*root, data, idctr) != true) {
 			idctr++;
 			size++;
 		}
 	}
 }
+
+void Tree::search(Data data) {
+	bool flag = false;
+	Leaf curent = *root;
+	while ((&curent != nullptr) && flag == false) {
+
+		if (*curent.leafData == data) flag = true;
+		else if (*curent.leafData < data) curent = *curent.right;
+		else curent = *curent.left;
+	}
+	memory = new Leaf(curent);
+};
 
 #endif // !BST_H

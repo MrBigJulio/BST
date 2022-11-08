@@ -8,21 +8,25 @@ int main()
 {
     Tree* tree = new Tree();
     Data* a = new Data();
-    a->dataC = 'a';
-    a->dataI = 3;
+    a->dataChar = 'a';
+    a->dataInt = 3;
     tree->add(*a);
     Data* b = new Data();
-    b->dataI = 2;
-    b->dataC = 'b';
+    b->dataInt = 2;
+    b->dataChar = 'b';
     tree->add(*b);
     Data* c = new Data();
-    c->dataI = 4;
-    c->dataC = 'c';
+    c->dataInt = 4;
+    c->dataChar = 'c';
     tree->add(*c);
     Data* d = new Data();
-    d->dataI = 4;
-    d->dataC = 'c';
-    tree->add(*d);
+    d->dataInt = 4;
+    d->dataChar = 'c';
+    tree->search(*d);
+
+    
+    
+
 
 }
 
