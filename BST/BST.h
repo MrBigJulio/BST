@@ -65,23 +65,14 @@ public:
 		left = leaf.left;
 		right = leaf.right;
 	}
-
-
-	bool addCompare(Data a, Data b) {
-		if (a.dataInt < b.dataInt) return true;
-		else if (a.dataInt == b.dataInt) {
-			return a.dataChar < b.dataChar;
-		}
-		else return false;
-	}
-
 	
 
-	bool createLeaf(Data data, int counter) {
+	bool create(Data data, int counter) {
+		bool flag = true;
 		while (true) {
-			if (addCompare(data, *this->leafData)) {
+			if (data < *this->leafData) {
 				if (this->left) {
-					this->left->createLeaf(data, counter);
+					this->left->create(data, counter);
 					break;
 				}
 				else {
@@ -90,9 +81,9 @@ public:
 					break;
 				}
 			}
-			else if (addCompare(*this->leafData, data)) {
+			else if (*this->leafData < data) {
 				if (this->right) {
-					this->right->createLeaf(data, counter);
+					this->right->create(data, counter);
 					break;
 				}
 				else {
@@ -102,7 +93,8 @@ public:
 				}
 			}
 			else {
-				return true;
+				flag = false;
+				return flag;
 			};
 		}
 	}
@@ -124,10 +116,6 @@ public:
 		memory = nullptr;
 	}
 
-	bool create(Leaf& root, Data data, int counter) {
-		return root.createLeaf(data, counter);
-	}
-
 	void add(Data);
 	void search(Data);
 	void del();
@@ -146,42 +134,10 @@ void Tree::add(Data data) {
 	}
 	else
 	{
-		if (create(*root, data, idctr) != true) {
+		if (root->create(data, idctr) != false) {
 			idctr++;
 			size++;
 		}
-
-		//bool flag = false;
-		//Leaf curent = *root;
-		//while (flag != true) {
-		//	if (data < *curent.leafData) {
-		//		if (curent.left) {
-		//			curent = *curent.left;
-		//		}
-		//		else {
-		//			curent.left = new Leaf(data, curent, idctr);
-		//			//*curent.left->parent = curent;
-		//			size++;
-		//			idctr++;
-		//			flag = true;
-		//		}
-		//	}
-		//	else if (*curent.leafData < data) {
-		//		if (curent.right) {
-		//			curent = *curent.right;
-		//		}
-		//		else {
-		//			curent.right = new Leaf(data, curent, idctr);
-		//			//*curent.right->parent = curent;
-		//			size++;
-		//			idctr++;
-		//			flag = true;
-		//		}
-		//	}
-		//	else {
-		//		flag = true;
-		//	};
-		//}
 	}
 }
 
@@ -196,5 +152,7 @@ void Tree::search(Data data) {
 	}
 	memory = new Leaf(curent);
 };
+
+void 
 
 #endif // !BST_H
