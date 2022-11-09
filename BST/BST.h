@@ -11,6 +11,11 @@ public:
 
 	}
 
+	~Data() {
+		dataInt = NULL;
+		dataChar = NULL;
+	}
+
 	Data(const Data& data) {
 		dataInt = data.dataInt;
 		dataChar = data.dataChar;
@@ -66,37 +71,64 @@ public:
 		right = leaf.right;
 	}
 	
+	~Leaf() {
+		id = NULL;
+		delete leafData;
+		leafData = nullptr;
+		parent = nullptr;
+		left = nullptr;
+		right = nullptr;
+
+	}
 
 	bool create(Data data, int counter) {
+		bool fail = true;
 		bool flag = true;
-		while (true) {
+		while (flag) {
 			if (data < *this->leafData) {
 				if (this->left) {
 					this->left->create(data, counter);
-					break;
 				}
 				else {
 					this->left = new Leaf(data, counter);
 					this->left->parent = this;
-					break;
 				}
+				flag = false;
 			}
 			else if (*this->leafData < data) {
 				if (this->right) {
 					this->right->create(data, counter);
-					break;
 				}
 				else {
 					this->right = new Leaf(data, counter);
 					this->right->parent = this;
-					break;
 				}
+				flag = false;
 			}
 			else {
+				fail = false;
 				flag = false;
-				return flag;
 			};
 		}
+		return fail;
+	}
+
+	void print() {
+		cout << this->id << ", " << this->leafData->dataInt << ", " << this->leafData->dataChar << endl;
+	}
+
+	void info() {
+		cout << "(" << this->id;
+		cout << ": [p:";
+		if (this->parent) cout << this->parent->id;
+		else cout << "NULL";
+		cout << ", l: ";
+		if (this->left) cout << this->left->id;
+		else cout << "NULL";
+		cout << ", r: ";
+		if (this->right) cout << this->right->id;
+		else cout << "NULL";
+		cout << "], data : " << this->leafData->dataInt << ", " << this->leafData->dataChar << ")" << endl;
 	}
 
 };
@@ -106,21 +138,66 @@ private:
 	Leaf* root;
 	int size;
 	int idctr;
-	
+	int treeHeight;
 public:
-	Leaf* memory;
+	
 	Tree() {
 		root = nullptr;
 		size = 0;
 		idctr = 0;
-		memory = nullptr;
+		treeHeight = 0;
+	}
+
+	void scanPreorder(Leaf& leaf) {
+		if (&leaf != nullptr) {
+			leaf.print();
+			scanPreorder(*leaf.left);
+			scanPreorder(*leaf.right);
+		}
+	}
+
+	void scanInorder(Leaf& leaf) {
+		if (&leaf != nullptr) {
+			scanInorder(*leaf.left);
+			leaf.print();
+			scanInorder(*leaf.right);
+		}
+	}
+
+	void cleanTree(Leaf& leaf) {
+		if (&leaf != nullptr) {
+			cleanTree(*leaf.left);
+			cleanTree(*leaf.right);
+			delete &leaf;
+			this->size--;
+		}
+		this->root = nullptr;
+	}
+
+	void findHeight(Leaf& leaf, int depth, int &max) {
+		if (&leaf != nullptr) {
+			depth++;
+			findHeight(*leaf.left, depth, max);
+			findHeight(*leaf.right, depth, max);
+		}
+		if (depth > max) {
+			max = depth--;
+		}
+	}
+
+	void printInfo(Leaf& leaf) {
+		if (&leaf != nullptr) {
+			printInfo(*leaf.left);
+			leaf.info();
+			printInfo(*leaf.right);
+		}
 	}
 
 	void add(Data);
-	void search(Data);
+	Leaf* search(Data);
 	void del();
-	void pre();
-	void in();
+	void preorder();
+	void inorder();
 	void clean();
 	void height();
 	void to_string();
@@ -141,18 +218,46 @@ void Tree::add(Data data) {
 	}
 }
 
-void Tree::search(Data data) {
+Leaf* Tree::search(Data data) {
 	bool flag = false;
-	Leaf curent = *root;
-	while ((&curent != nullptr) && flag == false) {
-
-		if (*curent.leafData == data) flag = true;
-		else if (*curent.leafData < data) curent = *curent.right;
-		else curent = *curent.left;
+	Leaf start = *root;
+	Leaf *current = &start;
+	while ((current != nullptr) && flag == false) {
+		if (*current->leafData == data) flag = true;
+		else if (*current->leafData < data) current = current->right;
+		else current = current->left;
 	}
-	memory = new Leaf(curent);
+	return current;
 };
 
-void 
+void Tree::preorder() {
+	this->scanPreorder(*root);
+}
 
+void Tree::inorder() {
+	this->scanInorder(*root);
+}
+
+void Tree::clean() {
+	this->cleanTree(*root);
+}
+
+void Tree::height() {
+	int depth = 0;
+	int max = 0;
+	int *ctr;
+	ctr = &max;
+
+	this->findHeight(*root, depth, *ctr);
+	treeHeight = max;
+}
+
+void Tree::to_string() {
+	cout << "Size: " << size << endl;
+	this->height();
+	cout << "Height: " << treeHeight << endl;
+	cout << "{" << endl;
+	this->printInfo(*root);
+	cout << "}" << endl;
+}
 #endif // !BST_H

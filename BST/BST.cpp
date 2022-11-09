@@ -20,11 +20,14 @@ int main()
     c->dataChar = 'c';
     tree->add(*c);
     Data* d = new Data();
-    d->dataInt = 4;
+    d->dataInt = 5;
     d->dataChar = 'c';
-    tree->search(*d);
-
-    
+    tree->add(*d);
+    //tree->preorder();
+    //tree->inorder();
+    //tree->clean();
+    //tree->height();
+    tree->to_string();
     
 
 
