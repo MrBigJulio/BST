@@ -8,7 +8,8 @@ public:
 	char dataChar;
 
 	Data() {
-
+		dataInt = NULL;
+		dataChar = NULL;
 	}
 
 	~Data() {
@@ -119,7 +120,7 @@ public:
 
 	void info() {
 		cout << "(" << this->id;
-		cout << ": [p:";
+		cout << ": [p: ";
 		if (this->parent) cout << this->parent->id;
 		else cout << "NULL";
 		cout << ", l: ";
@@ -128,7 +129,7 @@ public:
 		cout << ", r: ";
 		if (this->right) cout << this->right->id;
 		else cout << "NULL";
-		cout << "], data : " << this->leafData->dataInt << ", " << this->leafData->dataChar << ")" << endl;
+		cout << "], data : (" << this->leafData->dataInt << ", " << this->leafData->dataChar << "))" << endl;
 	}
 
 };
@@ -228,7 +229,11 @@ Leaf* Tree::search(Data data) {
 		else current = current->left;
 	}
 	return current;
-};
+}
+
+void Tree::del() {
+
+}
 
 void Tree::preorder() {
 	this->scanPreorder(*root);
