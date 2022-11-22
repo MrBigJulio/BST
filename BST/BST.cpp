@@ -23,6 +23,11 @@ int main()
     d->dataInt = 5;
     d->dataChar = 'c';
     tree->add(*d);
+    Data* e = new Data();
+    e->dataInt = 3;
+    e->dataChar = 'a';
+    Leaf* l = tree->search(*e);
+    tree->del(l);
     //tree->preorder();
     //tree->inorder();
     //tree->clean();

@@ -79,39 +79,6 @@ public:
 		parent = nullptr;
 		left = nullptr;
 		right = nullptr;
-
-	}
-
-	bool create(Data data, int counter) {
-		bool fail = true;
-		bool flag = true;
-		while (flag) {
-			if (data < *this->leafData) {
-				if (this->left) {
-					this->left->create(data, counter);
-				}
-				else {
-					this->left = new Leaf(data, counter);
-					this->left->parent = this;
-				}
-				flag = false;
-			}
-			else if (*this->leafData < data) {
-				if (this->right) {
-					this->right->create(data, counter);
-				}
-				else {
-					this->right = new Leaf(data, counter);
-					this->right->parent = this;
-				}
-				flag = false;
-			}
-			else {
-				fail = false;
-				flag = false;
-			};
-		}
-		return fail;
 	}
 
 	void print() {
@@ -194,9 +161,18 @@ public:
 		}
 	}
 
+	void delNoKids() {
+
+	}
+
+	void delSingleKid() {
+
+	}
+
+
 	void add(Data);
 	Leaf* search(Data);
-	void del();
+	void del(Leaf*);
 	void preorder();
 	void inorder();
 	void clean();
@@ -205,34 +181,181 @@ public:
 };
 
 void Tree::add(Data data) {
-	if (!root) {
-		root = new Leaf(data, idctr);
-		idctr++;
+	if (!this->root) {
+		this->root = new Leaf(data, idctr++);
 		size++;
 	}
-	else
-	{
-		if (root->create(data, idctr) != false) {
-			idctr++;
-			size++;
+	else {
+		Leaf *start = this->root;
+		bool flag = true;
+		while (flag) {
+			if (data < *start->leafData) {
+				if (start->left) {
+					start = start->left;
+				}
+				else {
+					start->left = new Leaf(data, idctr++);
+					start->left->parent = start;
+					flag = false;
+					size++;
+				}
+			}
+			else if (*start->leafData < data) {
+				if (start->right) {
+					start = start->right;
+				}
+				else {
+					start->right = new Leaf(data, idctr++);
+					start->right->parent = start;
+					flag = false;
+					size++;
+				}
+			}
+			else {
+				flag = false;
+			};
 		}
 	}
 }
 
 Leaf* Tree::search(Data data) {
-	bool flag = false;
-	Leaf start = *root;
-	Leaf *current = &start;
-	while ((current != nullptr) && flag == false) {
-		if (*current->leafData == data) flag = true;
-		else if (*current->leafData < data) current = current->right;
-		else current = current->left;
+	if (*root->leafData == data) return root;
+	else {
+		bool flag = false;
+		Leaf start = *this->root;
+		Leaf* current = &start;
+		while ((current != nullptr) && flag == false) {
+			if (*current->leafData == data) flag = true;
+			else if (*current->leafData < data) current = current->right;
+			else current = current->left;
+		}
+		return current;
 	}
-	return current;
 }
 
-void Tree::del() {
-
+void Tree::del(Leaf *deleted) {
+	if (deleted) {
+		if (deleted == root) {
+			if (deleted->left == nullptr && deleted->right == nullptr) {
+				root = nullptr;
+				delete deleted;
+				size--;
+			}
+			else if (deleted->right == nullptr) {
+				deleted->left->parent = nullptr;
+				root = deleted->left;
+				delete deleted;
+				size--;
+			}
+			else if (deleted->left == nullptr) {
+				deleted->right->parent = nullptr;
+				root = deleted->right;
+				delete deleted;
+				size--;
+			}
+			else {
+				if (deleted->left->right == nullptr) {
+					deleted->left->parent = nullptr;
+					deleted->left->right = deleted->right;
+					if (deleted->right) deleted->right->parent = deleted->left;
+					root = deleted->left;
+					delete deleted;
+					size--;
+				}
+				else {
+					Leaf* current = deleted->left;
+					while(current->right != nullptr) {
+						current = current->right;
+					}
+					current->parent->right = current->left;
+					current->left->parent = current->parent;
+					deleted->leafData = current->leafData;
+					deleted->id = current->id;
+					delete current;
+					size--;
+				}
+			}
+			
+		}
+		else {
+			if (deleted->left == nullptr && deleted->right == nullptr) {
+				if (deleted == deleted->parent->left) {
+					deleted->parent->left = nullptr;
+				}
+				else if(deleted == deleted->parent->right) {
+					deleted->parent->right = nullptr;
+				}
+				delete deleted;
+				size--;
+			}
+			else if (deleted->right == nullptr) {
+				if (deleted == deleted->parent->left) {
+					deleted->parent->left = deleted->left;
+				}
+				else if (deleted == deleted->parent->right) {
+					deleted->parent->right = deleted->left;
+				}
+				deleted->left->parent = deleted->parent;
+				delete deleted;
+				size--;
+			}
+			else if (deleted->left == nullptr) {
+				if (deleted == deleted->parent->left) {
+					deleted->parent->left = deleted->right;
+				}
+				else if (deleted == deleted->parent->right) {
+					deleted->parent->right = deleted->right;
+				}
+				deleted->right->parent = deleted->parent;
+				delete deleted;
+				size--;
+			}
+			else {
+				if (deleted == deleted->parent->left) {
+					if (deleted->left->right == nullptr) {
+						deleted->left->parent = deleted->parent;
+						deleted->left->right = deleted->right;
+						if(deleted->right) deleted->right->parent = deleted->left;
+						delete deleted;
+						size--;
+					}
+					else {
+						Leaf* current = deleted->left;
+						while (current->right != nullptr) {
+							current = current->right;
+						}
+						current->parent->right = current->left;
+						current->left->parent = current->parent;
+						deleted->leafData = current->leafData;
+						deleted->id = current->id;
+						delete current;
+						size--;
+					}
+				}
+				else if (deleted == deleted->parent->right) {
+					if (deleted->right->left == nullptr) {
+						deleted->right->parent = deleted->parent;
+						deleted->right->left = deleted->left;
+						if (deleted->left) deleted->left->parent = deleted->right;
+						delete deleted;
+						size--;
+					}
+					else {
+						Leaf* current = deleted->right;
+						while (current->left != nullptr) {
+							current = current->left;
+						}
+						current->parent->left = current->right;
+						current->right->parent = current->parent;
+						deleted->leafData = current->leafData;
+						deleted->id = current->id;
+						delete current;
+						size--;
+					}
+				}
+			}
+		}
+	}
 }
 
 void Tree::preorder() {
